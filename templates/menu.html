@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% block title %}Меню - Суши-бар IZI{% endblock title %}
+{% block content %}
+<div class="container">
+    <h1 class="text-center my-4">Наше меню</h1>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <button class="btn btn-outline-primary category-btn active" data-category="all">Все</button>
+                <button class="btn btn-outline-primary category-btn" data-category="sushi">Суші</button>
+                <button class="btn btn-outline-primary category-btn" data-category="rolls">Роли</button>
+                <button class="btn btn-outline-primary category-btn" data-category="drinks">Напої</button>
+                <button class="btn btn-outline-primary category-btn" data-category="desserts">Десерти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="menu-items">
+        <div class="col-md-6 col-lg-4 mb-4 menu-item" data-category="sushi">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='image/classic_sushi.jpg') }}" class="card-img-top" alt="Суші">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Класичні суші</h5>
+                    <p class="card-text flex-grow-1">Традиційні суші з лососем, тунцем або вугрем</p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <span class="fw-bold">₴120</span>
+                        <button class="btn btn-primary btn-sm add-to-cart" data-id="1" data-name="Класичні суші" data-price="120">
+                            Додати
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 mb-4 menu-item" data-category="rolls">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='image/philadelphia_roll.jpg') }}" class="card-img-top" alt="Філадельфія рол">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Філадельфія рол</h5>
+                    <p class="card-text flex-grow-1">Рол з лососем, сиром філадельфія та огірком</p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <span class="fw-bold">₴180</span>
+                        <button class="btn btn-primary btn-sm add-to-cart" data-id="2" data-name="Філадельфія рол" data-price="180">
+                            Додати
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 mb-4 menu-item" data-category="rolls">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='image/california_roll.jpg') }}" class="card-img-top" alt="Каліфорнія рол">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Каліфорнія рол</h5>
+                    <p class="card-text flex-grow-1">Рол з крабом, авокадо та огірком</p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <span class="fw-bold">₴160</span>
+                        <button class="btn btn-primary btn-sm add-to-cart" data-id="3" data-name="Каліфорнія рол" data-price="160">
+                            Додати
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 mb-4 menu-item" data-category="drinks">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='image/green_tea.jpg') }}" class="card-img-top" alt="Зелений чай">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Зелений чай</h5>
+                    <p class="card-text flex-grow-1">Ароматний зелений чай з жасмином</p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <span class="fw-bold">₴40</span>
+                        <button class="btn btn-primary btn-sm add-to-cart" data-id="4" data-name="Зелений чай" data-price="40">
+                            Додати
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 mb-4 menu-item" data-category="desserts">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='image/mochi.jpg') }}" class="card-img-top" alt="Мочі">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Мочі</h5>
+                    <p class="card-text flex-grow-1">Солодкі рисові кліцки з начинкою</p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <span class="fw-bold">₴60</span>
+                        <button class="btn btn-primary btn-sm add-to-cart" data-id="5" data-name="Мочі" data-price="60">
+                            Додати
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 mb-4 menu-item" data-category="sushi">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='image/sashimi.jpg') }}" class="card-img-top" alt="Сашимі">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Сашимі</h5>
+                    <p class="card-text flex-grow-1">Тонко нарізана риба без рису</p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <span class="fw-bold">₴150</span>
+                        <button class="btn btn-primary btn-sm add-to-cart" data-id="6" data-name="Сашимі" data-price="150">
+                            Додати
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 m-3">
+        <button class="btn btn-success btn-lg" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+            <i class="bi bi-cart"></i> Корзина (<span id="cart-count">0</span>)
+        </button>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Ваше замовлення</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="cart-items">
+                <p class="text-muted">Корзина порожня</p>
+            </div>
+            <div class="mt-3">
+                <div class="d-flex justify-content-between">
+                    <strong>Разом:</strong>
+                    <strong id="total-price">₴0</strong>
+                </div>
+                <button class="btn btn-primary w-100 mt-3" id="checkout-btn">Оформити замовлення</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Фильтрация по категориям
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            const category = this.getAttribute('data-category');
+            
+            menuItems.forEach(item => {
+                if (category === 'all' || item.getAttribute('data-category') === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Добавление в корзину
+    let cart = [];
+    
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const name = this.getAttribute('data-name');
+            const price = parseFloat(this.getAttribute('data-price'));
+
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    name: name,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+            showNotification(`${name} додано до кошика!`);
+        });
+    });
+    
+    // Обновление корзины
+    function updateCart() {
+        const cartItems = document.getElementById('cart-items');
+        const cartCount = document.getElementById('cart-count');
+        const totalPrice = document.getElementById('total-price');
+        
+        if (cart.length === 0) {
+            cartItems.innerHTML = '<p class="text-muted">Корзина порожня</p>';
+            cartCount.textContent = '0';
+            totalPrice.textContent = '₴0';
+            return;
+        }
+        
+        let total = 0;
+        let count = 0;
+        let cartHTML = '';
+        
+        cart.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            count += item.quantity;
+            
+            cartHTML += `
+                <div class="card mb-2">
+                    <div class="card-body py-2">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>${item.name}</strong>
+                                <div class="small">₴${item.price} × ${item.quantity}</div>
+                            </div>
+                            <div class="text-end">
+                                <div>₴${itemTotal.toFixed(2)}</div>
+                                <button class="btn btn-sm btn-outline-danger remove-item" data-id="${item.id}">-</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        cartItems.innerHTML = cartHTML;
+        cartCount.textContent = count;
+        totalPrice.textContent = `₴${total.toFixed(2)}`;
+
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                removeFromCart(id);
+            });
+        });
+    }
+    
+    // Удаление из корзины
+    function removeFromCart(id) {
+        const itemIndex = cart.findIndex(item => item.id === id);
+        
+        if (itemIndex !== -1) {
+            if (cart[itemIndex].quantity > 1) {
+                cart[itemIndex].quantity -= 1;
+            } else {
+                cart.splice(itemIndex, 1);
+            }
+            updateCart();
+        }
+    }
+    
+    // Показ уведомления
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        notification.style.bottom = '70px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '1050';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 3000);
+    }
+    
+    // Оформление заказа
+    document.getElementById('checkout-btn').addEventListener('click', function() {
+        if (cart.length === 0) {
+            alert('Кошик порожній!');
+            return;
+        }
+
+        alert('Перенаправлення на сторінку оформлення замовлення...');
+    });
+});
+</script>
+{% endblock content %}

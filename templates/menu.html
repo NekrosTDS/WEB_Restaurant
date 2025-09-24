@@ -35,7 +35,17 @@
                     <p class="card-text flex-grow-1">{{ item.description or "Смачна страва японської кухні" }}</p>
                     <div class="d-flex justify-content-between align-items-center mt-auto">
                         <span class="fw-bold">₴{{ "%.2f"|format(item.price) }}</span>
-                        ...
+                        {% if current_user.is_authenticated %}
+                        <form method="POST" action="{{ url_for('orders.add_to_cart', item_id=item.id) }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                Додати в кошик
+                            </button>
+                        </form>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">Увійти щоб замовити</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

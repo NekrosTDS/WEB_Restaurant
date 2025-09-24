@@ -35,6 +35,7 @@ def load_user_from_session(user_id):
     except:
         return None
 
+
 @app.route("/")
 def index():
     return render_template("index.html")

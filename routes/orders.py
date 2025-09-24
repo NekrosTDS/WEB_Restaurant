@@ -102,6 +102,7 @@ def order_history():
         
         return render_template("order_history.html", orders=orders)
 
+
 @bp.route('/menu')
 def show_menu():
     db_path = os.path.join(os.path.dirname(__file__), '..', 'restaurant_db.db')

@@ -203,5 +203,6 @@ def init_db():
     finally:
         session.close()
 
+
 if __name__ == "__main__":
     init_db()

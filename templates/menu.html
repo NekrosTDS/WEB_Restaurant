@@ -19,33 +19,28 @@
     </div>
 
     <div class="row" id="menu-items">
-        {% for item in menu_items %} <!-- Цикл по всіх стравах -->
+        {% for item in menu_items %}
         <div class="col-md-6 col-lg-4 mb-4 menu-item" data-category="{{ item.category }}">
             <div class="card h-100">
                 {% if item.image_path %}
-                <!-- Виводимо зображення, якщо шлях вказаний -->
                 <img src="{{ item.image_path }}" class="card-img-top" alt="{{ item.name }}" style="height: 200px; object-fit: cover;">
                 {% else %}
-                <!-- Інакше показуємо заглушку -->
                 <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
                     <span class="text-muted">Немає зображення</span>
                 </div>
                 {% endif %}
 
                 <div class="card-body d-flex flex-column">
-                    <!-- Виводимо назву -->
                     <h5 class="card-title">{{ item.name }}</h5>
-                    <!-- Виводимо опис -->
                     <p class="card-text flex-grow-1">{{ item.description or "Смачна страва японської кухні" }}</p>
                     <div class="d-flex justify-content-between align-items-center mt-auto">
-                        <!-- Виводимо ціну -->
                         <span class="fw-bold">₴{{ "%.2f"|format(item.price) }}</span>
                         ...
                     </div>
                 </div>
             </div>
         </div>
-        {% endfor %} <!-- Кінець циклу -->
+        {% endfor %}
     </div>
 </div>
 

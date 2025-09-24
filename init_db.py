@@ -69,7 +69,7 @@ def init_db():
                 price=320.00,
                 rating=5,
                 description="Лосось, вершковий сир, огірок, авокадо, норі",
-                image_path="/images/philadelphia.jpg",
+                image_path="/static/image/philadelphia_roll.jpg",
                 category="Роли",
                 active=True
             ),
@@ -78,7 +78,7 @@ def init_db():
                 price=280.00,
                 rating=4,
                 description="Вугор, вершковий сир, авокадо, ікра масаго",
-                image_path="/images/california.jpg",
+                image_path="/static/image/california_roll.jpg",
                 category="Роли",
                 active=True
             ),
@@ -87,7 +87,7 @@ def init_db():
                 price=650.00,
                 rating=5,
                 description="8 ролів: філадельфія, каліфорнія, з лососем та тунцем",
-                image_path="/images/samurai_set.jpg",
+                image_path="/static/image/classic_sudrl.jpg",
                 category="Сети",
                 active=True
             ),
@@ -96,7 +96,7 @@ def init_db():
                 price=120.00,
                 rating=4,
                 description="Традиційний японський суп з пастою місо, тофу та водоростями",
-                image_path="/images/miso_soup.jpg",
+                image_path="/static/image/classic_sudrl.jpg",
                 category="Супи",
                 active=True
             ),
@@ -105,7 +105,7 @@ def init_db():
                 price=180.00,
                 rating=4,
                 description="Креветки в хрусткому тісті темпура з соусом",
-                image_path="/images/tempura.jpg",
+                image_path="/static/image/classic_sudrl.jpg",
                 category="Гарячі страви",
                 active=True
             ),
@@ -114,7 +114,7 @@ def init_db():
                 price=220.00,
                 rating=5,
                 description="Лосось, вершковий сир, запечені під соусом унагі",
-                image_path="/images/baked_salmon.jpg",
+                image_path="/static/image/classic_sudrl.jpg",
                 category="Запечені роли",
                 active=True
             ),
@@ -123,7 +123,7 @@ def init_db():
                 price=150.00,
                 rating=4,
                 description="4 шт., тунець, ікра тобіко, майонез",
-                image_path="/images/gunkan_tuna.jpg",
+                image_path="/static/image/classic_sudrl.jpg",
                 category="Гункани",
                 active=True
             ),
@@ -132,7 +132,7 @@ def init_db():
                 price=190.00,
                 rating=4,
                 description="Креветка, огірок, спайсі соус, ікра масаго",
-                image_path="/images/spicy_shrimp.jpg",
+                image_path="/static/image/classic_sudrl.jpg",
                 category="Спайсі роли",
                 active=True
             ),
@@ -141,7 +141,7 @@ def init_db():
                 price=380.00,
                 rating=4,
                 description="Роли з авокадо, огірком, перцем та морквою",
-                image_path="/images/vegan_set.jpg",
+                image_path="/static/image/classic_sudrl.jpg",
                 category="Сети",
                 active=True
             ),
@@ -150,8 +150,26 @@ def init_db():
                 price=50.00,
                 rating=5,
                 description="Якісний зелений чай на порцію",
-                image_path="/images/green_tea.jpg",
+                image_path="/static/image/green_tea.jpg",
                 category="Напої",
+                active=True
+            ),
+            Menu(
+                name="Мочі",
+                price=80.00,
+                rating=4,
+                description="Солодкі рисові кліцки з різними начинками",
+                image_path="/static/image/mochi.jpg",
+                category="Десерти",
+                active=True
+            ),
+            Menu(
+                name="Сашимі з лосося",
+                price=200.00,
+                rating=5,
+                description="Свіжий лосось, тонко нарізаний",
+                image_path="/static/image/sashimi.jpg",
+                category="Сашимі",
                 active=True
             )
         ]

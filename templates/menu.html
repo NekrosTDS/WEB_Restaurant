@@ -4,19 +4,17 @@
 <div class="container">
     <h1 class="text-center my-4">🍽️ Наше меню</h1>
 
+    <!-- Кнопки для фильтрации по категориям -->
     <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex flex-wrap justify-content-center gap-2">
-                <button class="btn btn-outline-primary category-btn active" data-category="all">Всі</button>
-                <button class="btn btn-outline-primary category-btn" data-category="Роли">Роли</button>
-                <button class="btn btn-outline-primary category-btn" data-category="Сети">Сети</button>
-                <button class="btn btn-outline-primary category-btn" data-category="Супи">Супи</button>
-                <button class="btn btn-outline-primary category-btn" data-category="Напої">Напої</button>
-                <button class="btn btn-outline-primary category-btn" data-category="Десерти">Десерти</button>
-                <button class="btn btn-outline-primary category-btn" data-category="Сашимі">Сашимі</button>
+            <div class="col-12">
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <button class="btn btn-outline-primary category-btn active" data-category="all">Всі</button>
+                    {% for category in categories %}
+                    <button class="btn btn-outline-primary category-btn" data-category="{{ category }}">{{ category }}</button>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
 
 
     <div class="row" id="menu-items">

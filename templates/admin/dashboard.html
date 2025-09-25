@@ -9,7 +9,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-white bg-primary">
                 <div class="card-body">
-                    <h5 class="card-title">Замовлень всього</h5>
+                    <h5 class="dashboard-card">Замовлень всього</h5>
                     <h2>{{ total_orders }}</h2>
                 </div>
             </div>
@@ -18,7 +18,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-white bg-warning">
                 <div class="card-body">
-                    <h5 class="card-title">Очікують обробки</h5>
+                    <h5 class="dashboard-card">Очікують обробки</h5>
                     <h2>{{ pending_orders }}</h2>
                 </div>
             </div>
@@ -27,7 +27,7 @@
         <div class="col-md-4 mb-4">
             <div class="card text-white bg-success">
                 <div class="card-body">
-                    <h5 class="card-title">Страв в меню</h5>
+                    <h5 class="dashboard-card">Страв в меню</h5>
                     <h2>{{ active_menu_items }}</h2>
                 </div>
             </div>
@@ -39,7 +39,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Швидкі дії</h5>
+                    <h5 class="dashboard-card">Швидкі дії</h5>
                     <div class="d-grid gap-2 d-md-flex">
                         <a href="{{ url_for('admin.menu_management') }}" class="btn btn-primary me-2">
                             🍣 Управління меню

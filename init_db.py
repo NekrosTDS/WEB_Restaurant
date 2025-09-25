@@ -1,4 +1,4 @@
-from models import Base, User, Menu, Order, Reservation
+from models import Base, User, Menu, Order, Reservation, SiteSettings
 from settings import Session
 from werkzeug.security import generate_password_hash
 
@@ -58,6 +58,49 @@ def init_db():
         print("   Пароль: TestUser123!")
     else:
         print("  Тестовий користувач вже існує!")
+
+    # Додавання налаштувань сайту (фонові зображення)
+    existing_settings = session.query(SiteSettings).first()
+    if not existing_settings:
+        background_settings = [
+            SiteSettings(
+                setting_name="main_background_image",
+                setting_value="https://media.discordapp.net/attachments/1417846956751061053/1420711858729385994/G_fon.png?ex=68d66486&is=68d51306&hm=e87798775fec547b3e4d135257e2b1ccc68518cc49ed11441c64030652c9bee6&=&quality=lossless",
+                description="Головне фонове зображення сайту"
+            ),
+            SiteSettings(
+                setting_name="menu_background_image",
+                setting_value="https://media.discordapp.net/attachments/1417846956751061053/1420711860034076772/menu_fon.png?ex=68d66486&is=68d51306&hm=6cc45fe56373dc1d59cfb8aa22ce40cea11e8fa9d80a577a52f6faab8103f752&=&quality=lossless",
+                description="Фонове зображення сторінки меню"
+            ),
+            SiteSettings(
+                setting_name="admin_panel_background_image",
+                setting_value="https://media.discordapp.net/attachments/1333041787111215125/1420733710487257108/admin_panel_fon.jpg?ex=68d678e0&is=68d52760&hm=e36c325140c045a20b29a08319a85643e1cbfad47905e2c24d6cb5dbe331ead4&=",
+                description="Фонове зображення сторінки адміністратора"
+            ),
+            SiteSettings(
+                setting_name="logo_image",
+                setting_value="https://media.discordapp.net/attachments/1417846956751061053/1420471946776154345/logo_sushi_monsters.png?ex=68d62dd7&is=68d4dc57&hm=b267d965cf43859d2facdda8311059b3999e98578021184c78125660494d4b29&=&quality=lossless",
+                description="Логотип сайту"
+            ),
+            SiteSettings(
+                setting_name="cart_background_image",
+                setting_value="https://media.discordapp.net/attachments/1333041787111215125/1420733710835388527/cart_fon.jpg?ex=68d678e0&is=68d52760&hm=1b8ab723177dc6cef954859e582720f4385413a795325a7af66a7f07b634662a&=",
+                description="Фон для сторінки корзини"
+            ),
+            SiteSettings(
+                setting_name="order_history_background_image",
+                setting_value="https://media.discordapp.net/attachments/1333041787111215125/1420733710835388527/cart_fon.jpg?ex=68d678e0&is=68d52760&hm=1b8ab723177dc6cef954859e582720f4385413a795325a7af66a7f07b634662a&=",
+                description="Фон для сторінки історії замовлень"
+            )
+        ]
+
+        for setting in background_settings:
+            session.add(setting)
+        print(f"✅ Додано {len(background_settings)} налаштувань сайту!")
+    else:
+        settings_count = session.query(SiteSettings).count()
+        print(f"  Налаштування сайту вже існують! Кількість: {settings_count}")
 
 
     existing_menu = session.query(Menu).first()
@@ -190,10 +233,12 @@ def init_db():
 
         users_count = session.query(User).count()
         menu_count = session.query(Menu).count()
+        settings_count = session.query(SiteSettings).count()
         admins_count = session.query(User).filter(User.is_admin == True).count()
         
         print(f"Користувачів у системі: {users_count}")
         print(f"Адміністраторів: {admins_count}")
+        print(f"Налаштувань сайту завантажено: {settings_count}")
         print(f"Страв у меню: {menu_count}")
         print("=" * 50)
         

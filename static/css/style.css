@@ -8,13 +8,13 @@ body {
 
 h1.display-4 {
     font-weight: 700;
-    color: #e63946;
+    color: #353535;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 p.lead {
     font-size: 1.3rem;
-    color: #555;
+    color: #582ed3;
 }
 
 .card {
@@ -31,15 +31,15 @@ p.lead {
 .card-title {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #1d3557;
+    color: rgba(0, 136, 120, 0.79);
 }
 
 .card-text {
-    color: #444;
+    color: #0e5c13;
 }
 
 .btn-primary {
-    background-color: #e63946;
+    background-color: #4927ad;
     border: none;
     padding: 12px 25px;
     border-radius: 2rem;
@@ -48,12 +48,12 @@ p.lead {
 }
 
 .btn-primary:hover {
-    background-color: #d62839;
+    background-color: rgb(30, 0, 122);
 }
 
 .btn-outline-primary {
-    border: 2px solid #e63946;
-    color: #e63946;
+    border: 2px solid #582ed3;
+    color: #6032ea;
     padding: 12px 25px;
     border-radius: 2rem;
     font-size: 1.1rem;
@@ -61,7 +61,7 @@ p.lead {
 }
 
 .btn-outline-primary:hover {
-    background-color: #e63946;
+    background-color: #001c6a;
     color: #fff;
 }
 
@@ -76,4 +76,13 @@ p.lead {
 img {
     height: 200px;
     object-fit: cover;
+}
+
+.dashboard-card {
+    text-decoration-color: #f9f9f9;
+}
+
+ .dashboard-card:hover {
+    background-color: #f9f9f9;
+    color: #582ed3;
 }

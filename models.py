@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import DateTime, ForeignKey, String, Text, select, Enum
+from sqlalchemy import DateTime, ForeignKey, String, Text, select, Enum, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from settings import Session
 from flask_login import UserMixin
@@ -43,6 +43,35 @@ class User(UserMixin, Base):
             user = session.scalar(select(cls).filter(cls.username == username))
             return user
 
+
+class SiteSettings(Base):
+    __tablename__ = "site_settings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    setting_name: Mapped[str] = mapped_column(String(100), unique=True,
+                                              nullable=False)
+    setting_value: Mapped[str] = mapped_column(Text, nullable=True)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    def __repr__(self) -> str:
+        return f"SiteSettings: {self.setting_name} = {self.setting_value}"
+
+    @classmethod
+    def get_setting(cls, setting_name):
+        """Отримати значення налаштування за назвою"""
+        with Session() as session:
+            stmt = select(cls).where(cls.setting_name == setting_name)
+            result = session.execute(stmt)
+            setting = result.scalar_one_or_none()
+            return setting.setting_value if setting else None
+
+    @classmethod
+    def get_all_backgrounds(cls):
+        """Отримати всі налаштування фонових зображень"""
+        with Session() as session:
+            stmt = select(cls).where(cls.setting_name.like('%background%'))
+            result = session.execute(stmt)
+            settings = result.scalars().all()
+            return {setting.setting_name: setting.setting_value for setting in settings}
 
 class Menu(Base):
     __tablename__ = "menu"

@@ -20,20 +20,31 @@ def add_to_cart(item_id):
     
     with Session() as session:
         menu_item = session.query(Menu).filter(Menu.id == item_id).first()
-        
+
         if not menu_item:
             flash("Страву не знайдено", "error")
             return redirect(url_for("orders.menu"))
-        
-        # Создаем новый заказ
-        new_order = Order(
-            user_id=current_user.id,
+
+        # Проверяем, есть ли уже такой товар в корзине (со статусом PENDING)
+        existing_order = session.query(Order).filter(
+            Order.user_id == current_user.id,
+            Order.menu_id == item_id,
+            Order.status == OrderStatus.PENDING
+        ).first()
+
+        if existing_order:
+            existing_order.quantity += quantity
+            existing_order.total_price = existing_order.menu_item.price * existing_order.quantity
+        else:
+            # Создаем новый заказ
+            new_order = Order(
+                user_id=current_user.id,
             menu_id=item_id,
-            quantity=quantity,
-            total_price=menu_item.price * quantity
-        )
+                quantity=quantity,
+                total_price=menu_item.price * quantity
+            )
         
-        session.add(new_order)
+            session.add(new_order)
         session.commit()
         
         flash(f"'{menu_item.name}' додано до замовлення!", "success")

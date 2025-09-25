@@ -1,7 +1,10 @@
 from flask import Flask, render_template
+from sqlalchemy import select
+from unicodedata import category
+
 from settings import DatabaseConfig, Session
 from flask_login import LoginManager
-from models import User
+from models import User, Menu, SiteSettings, Order
 from routes import auth, admin, orders
 from flask_wtf.csrf import CSRFProtect
 import os
@@ -38,7 +41,67 @@ def load_user_from_session(user_id):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    images = get_background_settings()
+    return render_template("index.html", background_image=images.get('main_background_image'))
+#----------------------------------------#
+#@app.route("/order_history")
+#def order_history():
+    images = get_background_settings()
+    return render_template("order_history.html", background_image=images.get('order_history_background_image'))
+
+#@app.route("/cart")
+#def cart():
+    images = get_background_settings()
+    return render_template("cart.html", background_image=images.get('cart_background_image'))
+#----------------------------------------#
+
+@app.route("/admin/dashboard")
+def dashboard():
+    images = get_background_settings()
+
+    with Session() as session:
+        total_orders = session.query(orders.Order).count()
+
+        pending_orders = session.query(orders.Order).filter_by(status='pending').count()
+
+        active_menu_items = session.query(Menu).filter_by(active=True).count()
+
+    return render_template("admin/dashboard.html",
+                         background_image=images.get('admin_panel_background_image'),
+                         total_orders=total_orders,
+                         pending_orders=pending_orders,
+                         active_menu_items=active_menu_items)
+
+
+# Отримуємо унікальні категорії з активних елементів меню
+@app.route("/menu")
+def menu():
+    images = get_background_settings()
+    with Session() as session:
+        stmt = select(Menu).where(Menu.active == True)
+        result = session.execute(stmt)
+        menu_items = result.scalars().all()
+
+        categories = sorted(list(set(item.category for item in menu_items if item.category)))
+    return render_template("menu.html", menu_items=menu_items, categories=categories, background_image=images.get('menu_background_image'),)
+
+# Отримання фонових зображень
+def get_background_settings():
+    """Отримує налаштування фонових зображень з бази даних"""
+    backgrounds = {}
+    with Session() as session:
+        settings = session.query(SiteSettings).filter(
+            SiteSettings.setting_name.in_([
+                'main_background_image',
+                'menu_background_image',
+                'admin_panel_background_image'
+            ])
+        ).all()
+
+        for setting in settings:
+            backgrounds[setting.setting_name] = setting.setting_value
+
+    return backgrounds
 
 app.register_blueprint(auth.bp, url_prefix="/auth")
 app.register_blueprint(admin.bp)

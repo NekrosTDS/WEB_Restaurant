@@ -8,13 +8,13 @@ body {
 
 h1.display-4 {
     font-weight: 700;
-    color: #353535;
+    color: rgb(73, 39, 173);
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 p.lead {
     font-size: 1.3rem;
-    color: #582ed3;
+    color: rgb(255, 156, 156);
 }
 
 .card {
@@ -31,11 +31,11 @@ p.lead {
 .card-title {
     font-size: 1.2rem;
     font-weight: bold;
-    color: rgba(0, 136, 120, 0.79);
+    color: rgb(14, 92, 19);
 }
 
 .card-text {
-    color: #0e5c13;
+    color: rgba(0, 136, 120, 0.79);
 }
 
 .btn-primary {

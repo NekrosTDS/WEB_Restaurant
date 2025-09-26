@@ -4,6 +4,16 @@
 <div class="container">
     <h1 class="text-center my-4">🍽️ Наше меню</h1>
 
+    <!-- Поле пошуку -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="input-group">
+                <span class="input-group-text">🔍</span>
+                <input type="text" id="searchInput" class="form-control" placeholder="Пошук страв...">
+            </div>
+        </div>
+    </div>
+
     <!-- Кнопки для фильтрации по категориям -->
     <div class="row mb-4">
             <div class="col-12">
@@ -19,7 +29,10 @@
 
     <div class="row" id="menu-items">
         {% for item in menu_items %}
-        <div class="col-md-6 col-lg-4 mb-4 menu-item" data-category="{{ item.category }}">
+        <div class="col-md-6 col-lg-4 mb-4 menu-item"
+             data-category="{{ item.category }}"
+             data-name="{{ item.name.lower() }}"
+             data-description="{{ (item.description or '').lower() }}">
             <div class="card h-100">
                 {% if item.image_path %}
                 <img src="{{ item.image_path }}" class="card-img-top" alt="{{ item.name }}">
@@ -51,29 +64,68 @@
         </div>
         {% endfor %}
     </div>
+
+    <div id="noResultsMessage" class="text-center my-5" style="display: none;">
+        <h3>За вашим запитом нічого не знайдено</h3>
+        <p>Спробуйте змінити пошуковий запит або <a href="#" id="resetSearch">скинути фільтри</a></p>
+    </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Фильтрация по категориям
+<script>document.addEventListener('DOMContentLoaded', function() {
     const categoryButtons = document.querySelectorAll('.category-btn');
     const menuItems = document.querySelectorAll('.menu-item');
-    
+    const searchInput = document.getElementById('searchInput');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    const resetSearchLink = document.getElementById('resetSearch');
+
+    function filterMenuItems() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const activeCategory = document.querySelector('.category-btn.active').getAttribute('data-category');
+
+        let visibleItemsCount = 0;
+
+        menuItems.forEach(item => {
+            const category = item.getAttribute('data-category');
+            const name = item.getAttribute('data-name');
+            const description = item.getAttribute('data-description');
+
+            const categoryMatch = activeCategory === 'all' || category === activeCategory;
+
+            const searchMatch = searchTerm === '' ||
+                              name.includes(searchTerm) ||
+                              description.includes(searchTerm);
+
+            if (categoryMatch && searchMatch) {
+                item.style.display = 'block';
+                visibleItemsCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        if (visibleItemsCount === 0) {
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+
+    searchInput.addEventListener('input', filterMenuItems);
+
     categoryButtons.forEach(button => {
         button.addEventListener('click', function() {
             categoryButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
-            
-            const category = this.getAttribute('data-category');
-            
-            menuItems.forEach(item => {
-                if (category === 'all' || item.getAttribute('data-category') === category) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+            filterMenuItems();
         });
+    });
+
+    resetSearchLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        searchInput.value = '';
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.category-btn[data-category="all"]').classList.add('active');
+        filterMenuItems();
     });
 });
 </script>

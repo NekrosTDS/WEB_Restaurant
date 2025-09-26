@@ -80,9 +80,14 @@ def init_db():
             ),
             SiteSettings(
                 setting_name="logo_image",
-                setting_value="https://media.discordapp.net/attachments/1417846956751061053/1420471946776154345/logo_sushi_monsters.png?ex=68d62dd7&is=68d4dc57&hm=b267d965cf43859d2facdda8311059b3999e98578021184c78125660494d4b29&=&quality=lossless",
+                setting_value="https://media.discordapp.net/attachments/1208013883202338868/1421143982196396092/logo_sushi_monsters.png?ex=68d7f6f8&is=68d6a578&hm=17d3df32c9a1cf3a54e19e186d7eac0cab36e0325e38f92e3b96b837736d0d2c&=&quality=lossless",
                 description="Логотип сайту"
             ),
+            SiteSettings(
+                setting_name="mini_logo_image",
+                setting_value="https://media.discordapp.net/attachments/1417846956751061053/1420471946776154345/logo_sushi_monsters.png?ex=68d77f57&is=68d62dd7&hm=9981d4237beb4f8ea066f7c2ee5779a3296624aea9c31aaf255f6532f1ca6e56&=&quality=lossless",
+                description="Логотип сайту у навігації"
+                 ),
             SiteSettings(
                 setting_name="cart_background_image",
                 setting_value="https://media.discordapp.net/attachments/1333041787111215125/1420733710835388527/cart_fon.jpg?ex=68d678e0&is=68d52760&hm=1b8ab723177dc6cef954859e582720f4385413a795325a7af66a7f07b634662a&=",

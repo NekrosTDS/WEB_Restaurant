@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from settings import Session
-from models import Menu, Order, OrderStatus
+from models import Menu, Order, OrderStatus, SiteSettings
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -148,3 +148,55 @@ def cancel_order(order_id):
             flash("Замовлення не знайдено", "error")
     
     return redirect(url_for("admin.orders_management"))
+
+
+@bp.route("/settings", methods=["GET", "POST"])
+@login_required
+@admin_required
+def site_settings():
+    with Session() as session:
+        if request.method == "POST":
+            settings_data = {
+                'main_background_image': request.form.get('main_background_image'),
+                'menu_background_image': request.form.get('menu_background_image'),
+                'admin_panel_background_image': request.form.get('admin_panel_background_image'),
+                'cart_background_image': request.form.get('cart_background_image'),
+                'order_history_background_image': request.form.get('order_history_background_image'),
+                'logo_image': request.form.get('logo_image'),
+                'mini_logo_image': request.form.get('mini_logo_image')
+            }
+
+            for setting_name, setting_value in settings_data.items():
+                setting = session.query(SiteSettings).filter(
+                    SiteSettings.setting_name == setting_name
+                ).first()
+
+                if setting:
+                    setting.setting_value = setting_value
+                else:
+                    new_setting = SiteSettings(
+                        setting_name=setting_name,
+                        setting_value=setting_value,
+                        description=f"Налаштування {setting_name}"
+                    )
+                    session.add(new_setting)
+
+            session.commit()
+            flash("Налаштування успішно збережено!", "success")
+            return redirect(url_for("admin.site_settings"))
+
+        settings = session.query(SiteSettings).filter(
+            SiteSettings.setting_name.in_([
+                'main_background_image',
+                'menu_background_image',
+                'admin_panel_background_image',
+                'cart_background_image',
+                'order_history_background_image',
+                'logo_image',
+                'mini_logo_image'
+            ])
+        ).all()
+
+        settings_dict = {setting.setting_name: setting.setting_value for setting in settings}
+
+        return render_template("admin/settings.html", settings=settings_dict)

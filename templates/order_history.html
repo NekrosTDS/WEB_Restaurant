@@ -1,27 +1,27 @@
 {% extends "base.html" %}
-{% block title %}Історія замовлень - Суши-бар IZI{% endblock title %}
+{% block title %}{{ t('Історія замовлень') }} - {{ t('Суши-бар - IZI') }}{% endblock title %}
 {% block content %}
 <div class="container">
-    <h1 class="my-4">📋 Історія замовлень</h1>
+    <h1 class="my-4">📋 {{ t('Історія замовлень') }}</h1>
     
     {% if orders %}
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>№</th>
-                    <th>Страва</th>
-                    <th>Кількість</th>
-                    <th>Сума</th>
-                    <th>Статус</th>
-                    <th>Дата</th>
+                    <th>{{ t('№') }}</th>
+                    <th>{{ t('Страва') }}</th>
+                    <th>{{ t('Кількість') }}</th>
+                    <th>{{ t('Сума') }}</th>
+                    <th>{{ t('Статус') }}</th>
+                    <th>{{ t('Дата') }}</th>
                 </tr>
             </thead>
             <tbody>
                 {% for order in orders %}
                 <tr>
                     <td>{{ order.id }}</td>
-                    <td>{{ order.menu_item.name }}</td>
+                    <td>{{ t(order.menu_item.name) }}</td>
                     <td>{{ order.quantity }}</td>
                     <td>₴{{ "%.2f"|format(order.total_price) }}</td>
                     <td>
@@ -31,7 +31,7 @@
                             {% elif order.status.name == 'COMPLETED' %}bg-success
                             {% elif order.status.name == 'CANCELLED' %}bg-danger
                             {% else %}bg-secondary{% endif %}">
-                            {{ order.status.value }}
+                            {{ t(order.status.value) }}
                         </span>
                     </td>
                     <td>{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
@@ -42,8 +42,8 @@
     </div>
     {% else %}
     <div class="text-center my-5">
-        <h3>Замовлень ще немає</h3>
-        <p>Зробіть ваше перше замовлення в нашому <a href="{{ url_for('orders.menu') }}">меню</a>!</p>
+        <h3>{{ t('Замовлень ще немає') }}</h3>
+        <p>{{ t('Зробіть ваше перше замовлення в нашому') }} <a href="{{ url_for('orders.menu') }}">{{ t('меню') }}</a>!</p>
     </div>
     {% endif %}
 </div>

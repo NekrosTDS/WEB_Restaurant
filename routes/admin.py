@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from flask_login import login_required, current_user
 from settings import Session
 from models import Menu, Order, OrderStatus, SiteSettings, User, Reservation
@@ -9,7 +9,8 @@ bp = Blueprint('admin', __name__, url_prefix='/admin')
 def admin_required(func):
     def wrapper(*args, **kwargs):
         if not current_user.is_admin:
-            flash("Доступ заборонено. Потрібні права адміністратора", "error")
+            from app import t
+            flash(t('Доступ заборонено. Потрібні права адміністратора'), "error")
             return redirect(url_for("index"))
         return func(*args, **kwargs)
     wrapper.__name__ = func.__name__
@@ -19,29 +20,37 @@ def admin_required(func):
 @login_required
 @admin_required
 def dashboard():
-    with Session() as session:
+    current_lang = session.get('language', 'uk')
+    from app import t
+    with Session() as db_session:
 
-        total_orders = session.query(Order).count()
-        pending_orders = session.query(Order).filter(Order.status == OrderStatus.PENDING).count()
-        active_menu_items = session.query(Menu).filter(Menu.active == True).count()
+        total_orders = db_session.query(Order).count()
+        pending_orders = db_session.query(Order).filter(Order.status == OrderStatus.PENDING).count()
+        active_menu_items = db_session.query(Menu).filter(Menu.active == True).count()
         
         return render_template("admin/dashboard.html", 
                              total_orders=total_orders,
                              pending_orders=pending_orders,
-                             active_menu_items=active_menu_items)
+                             active_menu_items=active_menu_items,
+                             t=lambda key: t(key, current_lang),
+                             lang=current_lang)
 
 @bp.route("/menu")
 @login_required
 @admin_required
 def menu_management():
-    with Session() as session:
-        menu_items = session.query(Menu).all()
-        return render_template("admin/menu.html", menu_items=menu_items)
+    current_lang = session.get('language', 'uk')
+    from app import t
+    with Session() as db_session:
+        menu_items = db_session.query(Menu).all()
+        return render_template("admin/menu.html", menu_items=menu_items, t=lambda key: t(key, current_lang), lang=current_lang)
 
 @bp.route("/menu/add", methods=["GET", "POST"])
 @login_required
 @admin_required
 def add_menu_item():
+    current_lang = session.get('language', 'uk')
+    from app import t
     if request.method == "POST":
         name = request.form.get("name")
         price = float(request.form.get("price"))
@@ -57,24 +66,26 @@ def add_menu_item():
             image_path=image_path
         )
         
-        with Session() as session:
-            session.add(new_item)
-            session.commit()
+        with Session() as db_session:
+            db_session.add(new_item)
+            db_session.commit()
         
-        flash("Страву додано успішно!", "success")
+        flash(t('Страву додано успішно'), "success")
         return redirect(url_for("admin.menu_management"))
     
-    return render_template("admin/add_menu.html")
+    return render_template("admin/add_menu.html", t=lambda key: t(key, current_lang), lang=current_lang)
 
 @bp.route("/menu/edit/<int:item_id>", methods=["GET", "POST"])
 @login_required
 @admin_required
 def edit_menu_item(item_id):
-    with Session() as session:
-        item = session.query(Menu).filter(Menu.id == item_id).first()
+    current_lang = session.get('language', 'uk')
+    from app import t
+    with Session() as db_session:
+        item = db_session.query(Menu).filter(Menu.id == item_id).first()
         
         if not item:
-            flash("Страву не знайдено", "error")
+            flash(t('Страву не знайдено'), "error")
             return redirect(url_for("admin.menu_management"))
         
         if request.method == "POST":
@@ -85,51 +96,57 @@ def edit_menu_item(item_id):
             item.image_path = request.form.get("image_path", "")
             item.active = bool(request.form.get("active"))
             
-            session.commit()
-            flash("Страву оновлено успішно!", "success")
+            db_session.commit()
+            flash(t('Страву оновлено успішно'), "success")
             return redirect(url_for("admin.menu_management"))
         
-        return render_template("admin/edit_menu.html", item=item)
+        return render_template("admin/edit_menu.html", item=item, t=lambda key: t(key, current_lang), lang=current_lang)
 
 @bp.route("/menu/delete/<int:item_id>")
 @login_required
 @admin_required
 def delete_menu_item(item_id):
-    with Session() as session:
-        item = session.query(Menu).filter(Menu.id == item_id).first()
+    current_lang = session.get('language', 'uk')
+    from app import t
+    with Session() as db_session:
+        item = db_session.query(Menu).filter(Menu.id == item_id).first()
         
         if item:
-            session.delete(item)
-            session.commit()
-            flash("Страву видалено успішно!", "success")
+            db_session.delete(item)
+            db_session.commit()
+            flash(t('Страву видалено успішно'), "success")
         else:
-            flash("Страву не знайдено", "error")
-    
+            flash(t('Страву не знайдено'), "error")
     return redirect(url_for("admin.menu_management"))
+
 
 @bp.route("/orders")
 @login_required
 @admin_required
 def orders_management():
-    with Session() as session:
-        orders = session.query(Order).order_by(Order.created_at.desc()).all()
-        return render_template("admin/orders.html", orders=orders, OrderStatus=OrderStatus)
+    current_lang = session.get('language', 'uk')
+    from app import t
+    with Session() as db_session:
+        orders = db_session.query(Order).order_by(Order.created_at.desc()).all()
+        return render_template("admin/orders.html", orders=orders, OrderStatus=OrderStatus, t=lambda key: t(key, current_lang), lang=current_lang)
 
 @bp.route("/orders/update_status/<int:order_id>", methods=["POST"])
 @login_required
 @admin_required
 def update_order_status(order_id):
+    current_lang = session.get('language', 'uk')
+    from app import t
+
     new_status = request.form.get("status")
-    
-    with Session() as session:
-        order = session.query(Order).filter(Order.id == order_id).first()
+    with Session() as db_session:
+        order = db_session.query(Order).filter(Order.id == order_id).first()
         
         if order and new_status in [status.name for status in OrderStatus]:
             order.status = OrderStatus[new_status]
-            session.commit()
-            flash("Статус замовлення оновлено!", "success")
+            db_session.commit()
+            flash(t('Статус замовлення оновлено'), "success")
         else:
-            flash("Помилка оновлення статусу", "error")
+            flash(t('Помилка оновлення статусу'), "error")
     
     return redirect(url_for("admin.orders_management"))
 
@@ -137,15 +154,18 @@ def update_order_status(order_id):
 @login_required
 @admin_required
 def cancel_order(order_id):
-    with Session() as session:
-        order = session.query(Order).filter(Order.id == order_id).first()
+    current_lang = session.get('language', 'uk')
+    from app import t
+
+    with Session() as db_session:
+        order = db_session.query(Order).filter(Order.id == order_id).first()
         
         if order:
             order.status = OrderStatus.CANCELLED
-            session.commit()
-            flash("Замовлення скасовано!", "success")
+            db_session.commit()
+            flash(t('Замовлення скасовано адміном'), "success")
         else:
-            flash("Замовлення не знайдено", "error")
+            flash(t('Замовлення не знайдено'), "error")
     
     return redirect(url_for("admin.orders_management"))
 
@@ -154,7 +174,9 @@ def cancel_order(order_id):
 @login_required
 @admin_required
 def site_settings():
-    with Session() as session:
+    current_lang = session.get('language', 'uk')
+    from app import t
+    with Session() as db_session:
         if request.method == "POST":
             settings_data = {
                 'main_background_image': request.form.get('main_background_image'),
@@ -167,7 +189,7 @@ def site_settings():
             }
 
             for setting_name, setting_value in settings_data.items():
-                setting = session.query(SiteSettings).filter(
+                setting = db_session.query(SiteSettings).filter(
                     SiteSettings.setting_name == setting_name
                 ).first()
 
@@ -179,13 +201,13 @@ def site_settings():
                         setting_value=setting_value,
                         description=f"Налаштування {setting_name}"
                     )
-                    session.add(new_setting)
+                    db_session.add(new_setting)
 
-            session.commit()
-            flash("Налаштування успішно збережено!", "success")
+            db_session.commit()
+            flash( t('Налаштування успішно збережено!'), "success")
             return redirect(url_for("admin.site_settings"))
 
-        settings = session.query(SiteSettings).filter(
+        settings = db_session.query(SiteSettings).filter(
             SiteSettings.setting_name.in_([
                 'main_background_image',
                 'menu_background_image',
@@ -199,32 +221,36 @@ def site_settings():
 
         settings_dict = {setting.setting_name: setting.setting_value for setting in settings}
 
-        return render_template("admin/settings.html", settings=settings_dict)
+        return render_template("admin/settings.html", settings=settings_dict, t=lambda key: t(key, current_lang), lang=current_lang)
 
 @bp.route("/users")
 @login_required
 @admin_required
 def users_management():
-    with Session() as session:
-        users = session.query(User).all()
-        return render_template("admin/users.html", users=users)
+    current_lang = session.get('language', 'uk')
+    from app import t
+    with Session() as db_session:
+        users = db_session.query(User).all()
+        return render_template("admin/users.html", users=users, t=lambda key: t(key, current_lang), lang=current_lang)
 
 @bp.route("/users/toggle_admin/<int:user_id>", methods=["POST"])
 @login_required
 @admin_required
 def toggle_admin_status(user_id):
+    current_lang = session.get('language', 'uk')
+    from app import t
     if user_id == current_user.id:
-        flash("Ви не можете забрати адмін права у себе", "error")
+        flash( t('Ви не можете забрати адмін права у себе'), "error")
         return redirect(url_for("admin.users_management"))
 
     is_admin = request.form.get("is_admin") == "true"
 
-    with Session() as session:
-        user = session.query(User).filter(User.id == user_id).first()
+    with Session() as db_session:
+        user = db_session.query(User).filter(User.id == user_id).first()
 
         if user:
             user.is_admin = is_admin
-            session.commit()
+            db_session.commit()
             action = "надано" if is_admin else "забрано"
             flash(f"Адмін права {action} користувачу {user.username}!", "success")
         else:
@@ -237,18 +263,20 @@ def toggle_admin_status(user_id):
 @login_required
 @admin_required
 def delete_user(user_id):
+    current_lang = session.get('language', 'uk')
+    from app import t
     if user_id == current_user.id:
-        flash("Ви не можете видалити себе", "error")
+        flash( t('Ви не можете видалити себе'), "error")
         return redirect(url_for("admin.users_management"))
 
-    with Session() as session:
-        user = session.query(User).filter(User.id == user_id).first()
+    with Session() as db_session:
+        user = db_session.query(User).filter(User.id == user_id).first()
 
         if user:
-            session.query(Order).filter(Order.user_id == user_id).delete()
-            session.query(Reservation).filter(Reservation.user_id == user_id).delete()
-            session.delete(user)
-            session.commit()
+            db_session.query(Order).filter(Order.user_id == user_id).delete()
+            db_session.query(Reservation).filter(Reservation.user_id == user_id).delete()
+            db_session.delete(user)
+            db_session.commit()
             flash(f"Користувача {user.username} видалено!", "success")
         else:
             flash("Користувача не знайдено", "error")

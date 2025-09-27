@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Адмінпанель - Користувачі{% endblock title %}
+{% block title %}{{ t('Адмінпанель - Користувачі') }}{% endblock title %}
 {% block content %}
 <div class="container">
-    <h1 class="my-4">👥 Управління користувачами</h1>
+    <h1 class="my-4">👥 {{ t('Управління користувачами') }}</h1>
 
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Ім'я користувача</th>
-                    <th>Email</th>
-                    <th>Статус</th>
-                    <th>Дії</th>
+                    <th>{{ t('ID') }}</th>
+                    <th>{{ t("Ім'я користувача") }}</th>
+                    <th>{{ t('Email') }}</th>
+                    <th>{{ t('Статус') }}</th>
+                    <th>{{ t('Дії') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -23,7 +23,7 @@
                     <td>{{ user.email }}</td>
                     <td>
                         <span class="badge {% if user.is_admin %}bg-success{% else %}bg-secondary{% endif %}">
-                            {{ "Адміністратор" if user.is_admin else "Користувач" }}
+                            {{ t("Адміністратор") if user.is_admin else t("Користувач") }}
                         </span>
                     </td>
                     <td>
@@ -32,27 +32,27 @@
                             <form method="POST" action="{{ url_for('admin.toggle_admin_status', user_id=user.id) }}" class="d-inline">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="is_admin" value="false">
-                                <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Забрати права адміністратора у користувача {{ user.username }}?')">
-                                    Забрати адмін права
+                                <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('{{ t('Забрати права адміністратора у користувача') }} {{ user.username }}?')">
+                                    {{ t('Забрати адмін права') }}
                                 </button>
                             </form>
                             {% else %}
-                            <span class="text-muted">Поточний адмін</span>
+                            <span class="text-muted">{{ t('Поточний адмін') }}</span>
                             {% endif %}
                         {% else %}
                         <form method="POST" action="{{ url_for('admin.toggle_admin_status', user_id=user.id) }}" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="is_admin" value="true">
-                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Надати права адміністратора користувачу {{ user.username }}?')">
-                                Зробити адміном
+                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('{{ t('Надати права адміністратора користувачу') }} {{ user.username }}?')">
+                                {{ t('Зробити адміном') }}
                             </button>
                         </form>
                         {% endif %}
                         {% if user.username != current_user.username %}
                         <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Видалити користувача {{ user.username }}? Ця дія незворотня!')">
-                                🗑️ Видалити
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('{{ t('Видалити користувача') }} {{ user.username }}? {{ t('Ця дія незворотня!') }}')">
+                                🗑️ {{ t('Видалити') }}
                             </button>
                         </form>
                         {% endif %}
@@ -64,3 +64,4 @@
     </div>
 </div>
 {% endblock content %}
+

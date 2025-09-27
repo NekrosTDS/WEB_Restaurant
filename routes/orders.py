@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from flask_login import login_required, current_user
 from settings import Session
 from models import Menu, Order, OrderStatus
@@ -10,10 +10,13 @@ bp = Blueprint('orders', __name__)
 
 @bp.route("/menu")
 def menu():
-    with Session() as session:
-        menu_items = session.query(Menu).filter(Menu.active == True).all()
+    from app import t
+    current_lang = session.get('language', 'uk')
+
+    with Session() as db_session:
+        menu_items = db_session.query(Menu).filter(Menu.active == True).all()
         categories = sorted(list(set(item.category for item in menu_items if item.category)))
-    return render_template("menu.html", menu_items=menu_items, categories=categories)
+    return render_template("menu.html", menu_items=menu_items, categories=categories,t=lambda key: t(key, current_lang), lang=current_lang)
 
 @bp.route("/add_to_cart/<int:item_id>", methods=["POST"])
 @login_required
@@ -21,8 +24,8 @@ def add_to_cart(item_id):
     quantity = int(request.form.get("quantity", 1))
     print(f"DEBUG: Adding to cart - item_id: {item_id}, quantity: {quantity}, user: {current_user.id}")
     
-    with Session() as session:
-        menu_item = session.query(Menu).filter(Menu.id == item_id).first()
+    with Session() as db_session:
+        menu_item = db_session.query(Menu).filter(Menu.id == item_id).first()
         if not menu_item:
             flash("Страву не знайдено", "error")
             return redirect(url_for("orders.menu"))
@@ -30,7 +33,7 @@ def add_to_cart(item_id):
         print(f"DEBUG: Menu item found - {menu_item.name}")
         
         # Проверяем, есть ли уже такой товар в корзине (со статусом PENDING)
-        existing_order = session.query(Order).filter(
+        existing_order = db_session.query(Order).filter(
             Order.user_id == current_user.id,
             Order.menu_id == item_id,
             Order.status == OrderStatus.PENDING
@@ -49,9 +52,9 @@ def add_to_cart(item_id):
                 quantity=quantity,
                 total_price=menu_item.price * quantity
             )
-            session.add(new_order)
+            db_session.add(new_order)
         
-        session.commit()
+        db_session.commit()
         print(f"DEBUG: Order saved successfully")
         
         flash(f"'{menu_item.name}' додано до замовлення!", "success")
@@ -61,10 +64,12 @@ def add_to_cart(item_id):
 @login_required
 def cart():
     print(f"DEBUG: Cart page - user: {current_user.id}")
+    from app import t
+    current_lang = session.get('language', 'uk')
     
-    with Session() as session:
+    with Session() as db_session:
         # Используем eager loading для загрузки связанных данных
-        cart_items = session.query(Order).options(
+        cart_items = db_session.query(Order).options(
             joinedload(Order.menu_item)
         ).filter(
             Order.user_id == current_user.id,
@@ -84,40 +89,42 @@ def cart():
         return render_template("cart.html", 
                              cart_items=cart_items, 
                              total=total,
-                             background_image=images.get('cart_background_image'))
+                             background_image=images.get('cart_background_image'),
+                               t=lambda key: t(key, current_lang),
+                               lang=current_lang)
 
 @bp.route("/update_cart/<int:order_id>", methods=["POST"])
 @login_required
 def update_cart(order_id):
     quantity = int(request.form.get("quantity", 1))
-    with Session() as session:
-        order = session.query(Order).filter(
+    with Session() as db_session:
+        order = db_session.query(Order).filter(
             Order.id == order_id,
             Order.user_id == current_user.id
         ).first()
         if order and quantity > 0:
             order.quantity = quantity
             order.total_price = order.menu_item.price * quantity
-            session.commit()
+            db_session.commit()
             flash("Кількість оновлено!", "success")
         elif order and quantity == 0:
-            session.delete(order)
-            session.commit()
+            db_session.delete(order)
+            db_session.commit()
             flash("Страву видалено з кошика!", "success")
         return redirect(url_for("orders.cart"))
 
 @bp.route("/checkout", methods=["POST"])
 @login_required
 def checkout():
-    with Session() as session:
+    with Session() as db_session:
         # Подтверждаем все pending заказы пользователя
-        pending_orders = session.query(Order).filter(
+        pending_orders = db_session.query(Order).filter(
             Order.user_id == current_user.id,
             Order.status == OrderStatus.PENDING
         ).all()
         for order in pending_orders:
             order.status = OrderStatus.CONFIRMED
-        session.commit()
+        db_session.commit()
         flash("Замовлення оформлено! Очікуйте підтвердження.", "success")
         return redirect(url_for("orders.menu"))
 
@@ -125,10 +132,12 @@ def checkout():
 @login_required
 def order_history():
     print(f"DEBUG: Order history page - user: {current_user.id}")
+    from app import t
+    current_lang = session.get('language', 'uk')
     
-    with Session() as session:
+    with Session() as db_session:
         # Используем eager loading для загрузки связанных данных
-        orders_list = session.query(Order).options(
+        orders_list = db_session.query(Order).options(
             joinedload(Order.menu_item)
         ).filter(
             Order.user_id == current_user.id
@@ -144,14 +153,16 @@ def order_history():
         
         return render_template("order_history.html", 
                              orders=orders_list,
-                             background_image=images.get('order_history_background_image'))
+                             background_image=images.get('order_history_background_image'),
+                               t=lambda key: t(key, current_lang),
+                               lang=current_lang)
     
 @bp.route("/cancel_order/<int:order_id>")
 @login_required
 def cancel_order(order_id):
-    with Session() as session:
+    with Session() as db_session:
         # Находим заказ, принадлежащий текущему пользователю
-        order = session.query(Order).filter(
+        order = db_session.query(Order).filter(
             Order.id == order_id,
             Order.user_id == current_user.id,
             Order.status == OrderStatus.PENDING  # Можно отменять только pending заказы
@@ -159,8 +170,8 @@ def cancel_order(order_id):
         
         if order:
             # Удаляем заказ из корзины
-            session.delete(order)
-            session.commit()
+            db_session.delete(order)
+            db_session.commit()
             flash("Замовлення скасовано!", "success")
         else:
             flash("Замовлення не знайдено або не може бути скасоване", "error")

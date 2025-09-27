@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, session, redirect, url_for, flash
 from sqlalchemy import select
 from unicodedata import category
 from settings import DatabaseConfig, Session
@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from models import User, Menu, SiteSettings, Order
 from routes import auth, admin, orders
 from flask_wtf.csrf import CSRFProtect
+from translations import translations
 import os
 
 app = Flask(__name__)
@@ -40,36 +41,68 @@ def inject_logo():
     images = get_background_settings()
     return dict(mini_logo_image=images.get('mini_logo_image'))
 
+# Функция для получения перевода
+def t(key, lang='uk'):
+    return translations.get(lang, {}).get(key, key)
+
+
+# Маршрут для смены языка
+@app.route("/set_language/<language>")
+def set_language(language):
+    if language in ['uk', 'en']:
+        session['language'] = language
+        current_lang = session.get('language', 'uk')
+        flash(f"{t('Мову змінено на', current_lang)} {language.upper()}", 'success')
+    return redirect(request.referrer or url_for('index'))
+
 
 @app.route("/")
 def index():
     images = get_background_settings()
-    return render_template("index.html", background_image=images.get('main_background_image'), logo_image=images.get('logo_image'))
+    current_lang = session.get('language', 'uk')
+    return render_template("index.html",
+                        background_image=images.get('main_background_image'),
+                        logo_image=images.get('logo_image'),
+                        t=lambda key: t(key, current_lang),
+                        lang=current_lang)
 
 
 @app.route("/admin/dashboard")
 def dashboard():
     images = get_background_settings()
-    with Session() as session:
+    current_lang = session.get('language', 'uk')
+    with Session() as db_session:
 
-        total_orders = session.query(Order).count()
+        total_orders = db_session.query(Order).count()
         
 
-        pending_orders = session.query(Order).filter(Order.status == 'PENDING').count()
+        pending_orders = db_session.query(Order).filter(Order.status == 'PENDING').count()
 
-        active_menu_items = session.query(Menu).filter_by(active=True).count()
-    return render_template("admin/dashboard.html", background_image=images.get('admin_panel_background_image'), total_orders=total_orders, pending_orders=pending_orders, active_menu_items=active_menu_items)
+        active_menu_items = db_session.query(Menu).filter_by(active=True).count()
+    return render_template("admin/dashboard.html",
+                           background_image=images.get('admin_panel_background_image'),
+                           total_orders=total_orders,
+                           pending_orders=pending_orders,
+                           active_menu_items=active_menu_items,
+                           t=lambda key: t(key, current_lang),
+                           lang=current_lang)
 
 # Отримуємо унікальні категорії з активних елементів меню
 @app.route("/menu")
 def menu():
     images = get_background_settings()
-    with Session() as session:
+    current_lang = session.get('language', 'uk')
+    with Session() as db_session:
         stmt = select(Menu).where(Menu.active == True)
-        result = session.execute(stmt)
+        result = db_session.execute(stmt)
         menu_items = result.scalars().all()
         categories = sorted(list(set(item.category for item in menu_items if item.category)))
-    return render_template("menu.html", menu_items=menu_items, categories=categories, background_image=images.get('menu_background_image'))
+    return render_template("menu.html",
+                           menu_items=menu_items,
+                           categories=categories,
+                           background_image=images.get('menu_background_image'),
+                           t=lambda key: t(key, current_lang),
+                           lang=current_lang)
 
 # Отримання фонових зображень
 def get_background_settings():
@@ -98,19 +131,31 @@ app.register_blueprint(orders.bp)
 # Обробники помилок
 @app.errorhandler(404)
 def not_found_error(error):
-    return render_template('errors/404.html'), 404
+    current_lang = session.get('language', 'uk')
+    return render_template('errors/404.html',
+                         t=lambda key: t(key, current_lang),
+                         lang=current_lang), 404
 
 @app.errorhandler(403)
 def forbidden_error(error):
-    return render_template('errors/403.html'), 403
+    current_lang = session.get('language', 'uk')
+    return render_template('errors/403.html',
+                         t=lambda key: t(key, current_lang),
+                         lang=current_lang), 403
 
 @app.errorhandler(401)
 def unauthorized_error(error):
-    return render_template('errors/401.html'), 401
+    current_lang = session.get('language', 'uk')
+    return render_template('errors/401.html',
+                         t=lambda key: t(key, current_lang),
+                         lang=current_lang), 401
 
 @app.errorhandler(500)
 def internal_error(error):
-    return render_template('errors/500.html'), 500
+    current_lang = session.get('language', 'uk')
+    return render_template('errors/500.html',
+                         t=lambda key: t(key, current_lang),
+                         lang=current_lang), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5050)

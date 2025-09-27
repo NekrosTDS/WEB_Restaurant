@@ -80,7 +80,7 @@ def init_db():
             ),
             SiteSettings(
                 setting_name="logo_image",
-                setting_value="https://media.discordapp.net/attachments/1208013883202338868/1421143982196396092/logo_sushi_monsters.png?ex=68d7f6f8&is=68d6a578&hm=17d3df32c9a1cf3a54e19e186d7eac0cab36e0325e38f92e3b96b837736d0d2c&=&quality=lossless",
+                setting_value="https://media.discordapp.net/attachments/1417846956751061053/1420471946776154345/logo_sushi_monsters.png?ex=68d8d0d7&is=68d77f57&hm=b332f3771f66a54e4392725958d6a06aef67ebc0f53d97acf62f3b5acfebaf4f&=&quality=lossless",
                 description="Логотип сайту"
             ),
             SiteSettings(

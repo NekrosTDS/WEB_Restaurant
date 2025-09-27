@@ -86,3 +86,10 @@ img {
     background-color: #f9f9f9;
     color: #582ed3;
 }
+ .btn-user {
+     border-radius: 1rem;
+     padding: 10px;
+     background-color: #a8dadc;
+     color: #1d3557;
+     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+ }

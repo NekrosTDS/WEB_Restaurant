@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from settings import Session
-from models import Menu, Order, OrderStatus, SiteSettings
+from models import Menu, Order, OrderStatus, SiteSettings, User, Reservation
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -200,3 +200,57 @@ def site_settings():
         settings_dict = {setting.setting_name: setting.setting_value for setting in settings}
 
         return render_template("admin/settings.html", settings=settings_dict)
+
+@bp.route("/users")
+@login_required
+@admin_required
+def users_management():
+    with Session() as session:
+        users = session.query(User).all()
+        return render_template("admin/users.html", users=users)
+
+@bp.route("/users/toggle_admin/<int:user_id>", methods=["POST"])
+@login_required
+@admin_required
+def toggle_admin_status(user_id):
+    if user_id == current_user.id:
+        flash("Ви не можете забрати адмін права у себе", "error")
+        return redirect(url_for("admin.users_management"))
+
+    is_admin = request.form.get("is_admin") == "true"
+
+    with Session() as session:
+        user = session.query(User).filter(User.id == user_id).first()
+
+        if user:
+            user.is_admin = is_admin
+            session.commit()
+            action = "надано" if is_admin else "забрано"
+            flash(f"Адмін права {action} користувачу {user.username}!", "success")
+        else:
+            flash("Користувача не знайдено", "error")
+
+    return redirect(url_for("admin.users_management"))
+
+
+@bp.route("/users/delete/<int:user_id>", methods=["POST"])
+@login_required
+@admin_required
+def delete_user(user_id):
+    if user_id == current_user.id:
+        flash("Ви не можете видалити себе", "error")
+        return redirect(url_for("admin.users_management"))
+
+    with Session() as session:
+        user = session.query(User).filter(User.id == user_id).first()
+
+        if user:
+            session.query(Order).filter(Order.user_id == user_id).delete()
+            session.query(Reservation).filter(Reservation.user_id == user_id).delete()
+            session.delete(user)
+            session.commit()
+            flash(f"Користувача {user.username} видалено!", "success")
+        else:
+            flash("Користувача не знайдено", "error")
+
+    return redirect(url_for("admin.users_management"))

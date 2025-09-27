@@ -5,4 +5,3 @@ Flask-Login
 Flask-wtf
 Flask-Caching
 psycopg2
-gunicorn
